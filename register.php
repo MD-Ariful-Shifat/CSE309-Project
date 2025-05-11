@@ -3,6 +3,16 @@
 include 'connect.php';
 $error = null;
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $fullName = $_POST['fullName'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $confirmPassword = $_POST['confirmPassword'];
+    $role = $_POST['role'];
+
+    // Validation and insert logic...
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -16,7 +26,7 @@ $error = null;
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="home.html">IUB Quiz Hub</a>
+            <a class="navbar-brand" href="home.php">IUB Quiz Hub</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -47,6 +57,15 @@ $error = null;
                         <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
                     </div>
                     <div class="mb-3">
+                        <label for="role" class="form-label">Register As</label>
+                        <select name="role" id="role" class="form-select" required>
+                            <option value="" disabled selected>Select Role</option>
+                            <option value="student">Student</option>
+                            <option value="teacher">Teacher</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
                         <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
                     </div>
@@ -68,7 +87,7 @@ $error = null;
     <!-- Footer -->
     <footer class="bg-dark text-white text-center py-3 mt-5">
         <p>&copy; 2025 IUBQuiz Hub. All rights reserved.</p>
-        <p>Designed and developed by your team.</p>
+        <p>Designed and developed by Md. Ariful Shifat.</p>
     </footer>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

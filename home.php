@@ -72,7 +72,7 @@ include 'connect.php';
     
     <footer>
         <p>&copy; 2025 IUBQuiz Hub. All rights reserved.</p>
-        <p>Designed and developed by your team.</p>
+        <p>Designed and developed by Md. Ariful Shifat.</p>
     </footer>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

@@ -1,7 +1,9 @@
 <?php
-// Include database connection
-include 'connect.php';
-
+// List uploaded files
+$uploadDir = 'question_pdfs/';
+$pdfFiles = array_filter(scandir($uploadDir), function ($file) use ($uploadDir) {
+    return pathinfo($file, PATHINFO_EXTENSION) === 'pdf';
+});
 ?>
 
 <!DOCTYPE html>
@@ -41,20 +43,23 @@ include 'connect.php';
     <!-- Main Content -->
     <div class="content container py-5">
         <h2 class="text-center">Question Bank</h2>
+
         <div class="list-group mt-4">
-            <?php
-            if ($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    echo '<a href="#" class="list-group-item list-group-item-action">';
-                    echo '<h5 class="mb-1">' . htmlspecialchars($row['category_name']) . '</h5>';
-                    echo '<p class="mb-1">' . htmlspecialchars($row['description']) . '</p>';
-                    echo '<small class="text-muted">Updated on: ' . htmlspecialchars($row['updated_on']) . '</small>';
-                    echo '</a>';
-                }
-            } else {
-                echo '<p>No categories available at the moment.</p>';
-            }
-            ?>
+            <?php if (!empty($pdfFiles)): ?>
+                <?php foreach ($pdfFiles as $file): ?>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-1"><?php echo htmlspecialchars($file); ?></h5>
+                        </div>
+                        <div>
+                            <a href="<?php echo $uploadDir . $file; ?>" target="_blank" class="btn btn-sm btn-primary me-2">View</a>
+                            <a href="<?php echo $uploadDir . $file; ?>" download class="btn btn-sm btn-success">Download</a>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>No PDFs uploaded yet.</p>
+            <?php endif; ?>
         </div>
     </div>
 

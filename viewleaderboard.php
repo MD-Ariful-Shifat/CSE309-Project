@@ -1,7 +1,6 @@
 <?php
 // Include database connection
 include 'connect.php';
-
 ?>
 
 <!DOCTYPE html>

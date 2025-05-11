@@ -1,9 +1,44 @@
 <?php
-// Include database connection
+session_start();
 include 'connect.php';
-$error = null;
 
+$error = ''; // Initialize error variable
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $role = $_POST['role'];
+
+    $sql = "SELECT * FROM users WHERE email = ? AND role = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ss", $email, $role);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows == 1) {
+        $user = $result->fetch_assoc();
+
+        if ($user['password'] === $password) {
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['role'] = $user['role'];
+            $_SESSION['student_name'] = $user['full_name'];
+
+            if ($role === 'student') {
+                header("Location: sdashboard.php");
+            } elseif ($role === 'teacher') {
+                header("Location: tdashboard.php");
+            }
+            exit();
+        } else {
+            $error = "Incorrect password.";
+        }
+    } else {
+        $error = "User not found or role mismatch.";
+    }
+}
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -56,6 +91,14 @@ $error = null;
                     <?php endif; ?>
                     <form method="POST" action="login.php">
                         <div class="mb-3">
+                            <label for="role" class="form-label">Login As</label>
+                            <select name="role" id="role" class="form-select" required>
+                                <option value="" selected disabled>Select Role</option>
+                                <option value="student">Student</option>
+                                <option value="teacher">Teacher</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
                             <label for="email" class="form-label">Email Address</label>
                             <input type="email" name="email" class="form-control" id="email" placeholder="Enter your email" required>
                         </div>
@@ -74,7 +117,7 @@ $error = null;
     
         <footer class="bg-dark text-white text-center py-3">
             <p>&copy; 2025 IUB Quiz Hub. All rights reserved.</p>
-            <p>Designed and developed by your team.</p>
+            <p>Designed and developed by Md. Ariful Shifat.</p>
         </footer>
     </div>
     

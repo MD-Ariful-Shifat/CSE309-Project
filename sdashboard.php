@@ -1,8 +1,18 @@
 <?php
-// Include database connection
+session_start();
 include 'connect.php';
-// You should fetch the student's name from session or DB
-// Example: $student['fullName'] = $_SESSION['student_name'];
+
+// Make sure only students can access this page
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
+    header("Location: login.php");
+    exit();
+}
+
+$student_name = $_SESSION['student_name'];
+
+// Fetch available quizzes
+$sql = "SELECT * FROM quizzes";
+$result = $conn->query($sql);
 ?>
 
 <!DOCTYPE html>
@@ -66,13 +76,13 @@ include 'connect.php';
     <div class="sidebar d-flex flex-column p-3">
         <h4 class="text-center mb-4">IUBQuiz Hub</h4>
         <a href="home.php">Home</a>
-        <a href="takequiz.php">Take Quiz</a>
+        <a href="takequizlist.php">Take Quiz</a>
         <a href="viewresult.php">View Results</a>
-        <a href="viewleaderboard.php">Leaderboard</a>
         <a href="viewannouncement.php">Announcements</a>
         <a href="viewqbank.php">Question Bank</a>
         <a href="logout.php">Logout</a>
     </div>
+
 
     <!-- Main Content -->
     <div class="content">

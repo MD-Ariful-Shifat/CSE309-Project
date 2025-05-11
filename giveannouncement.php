@@ -1,16 +1,35 @@
 <?php
-// Include database connection
+session_start();
 include 'connect.php';
 
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
+    header("Location: login.php");
+    exit();
+}
+
+$teacher_id = $_SESSION['user_id'];
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $title = $_POST['announcementTitle'];
+    $content = $_POST['announcementContent'];
+
+    $stmt = $conn->prepare("INSERT INTO announcements (title, content, teacher_id) VALUES (?, ?, ?)");
+    $stmt->bind_param("ssi", $title, $content, $teacher_id);
+
+    if ($stmt->execute()) {
+        $success = "Announcement posted successfully!";
+    } else {
+        $error = "Failed to post announcement.";
+    }
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Give Announcement</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         html, body {
             height: 100%;
@@ -38,9 +57,8 @@ include 'connect.php';
     </div>
 </nav>
 
-<!-- Main Content -->
-<div class="content container mt-5">
-    <h2 class="text-center">Post an Announcement</h2>
+<div class="container mt-5 content">
+    <h2 class="text-center mb-4">Post an Announcement</h2>
 
     <?php if (isset($success)): ?>
         <div class="alert alert-success text-center"><?= $success ?></div>
@@ -51,23 +69,37 @@ include 'connect.php';
     <form method="POST" action="">
         <div class="mb-3">
             <label for="announcementTitle" class="form-label">Title</label>
-            <input type="text" class="form-control" id="announcementTitle" name="announcementTitle" placeholder="Enter the title of the announcement" required>
+            <input type="text" class="form-control" id="announcementTitle" name="announcementTitle" required>
         </div>
         <div class="mb-3">
             <label for="announcementContent" class="form-label">Announcement</label>
-            <textarea class="form-control" id="announcementContent" name="announcementContent" rows="4" placeholder="Write the details of the announcement" required></textarea>
+            <textarea class="form-control" id="announcementContent" name="announcementContent" rows="4" required></textarea>
         </div>
         <button type="submit" class="btn btn-primary">Post Announcement</button>
     </form>
+
+    <h4 class="mt-5">Your Announcements</h4>
+    <?php
+    $fetch = $conn->prepare("SELECT title, content, created_at FROM announcements WHERE teacher_id = ? ORDER BY created_at DESC");
+    $fetch->bind_param("i", $teacher_id);
+    $fetch->execute();
+    $result = $fetch->get_result();
+
+    while ($row = $result->fetch_assoc()):
+    ?>
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title"><?= htmlspecialchars($row['title']) ?></h5>
+                <p class="card-text"><?= nl2br(htmlspecialchars($row['content'])) ?></p>
+                <small class="text-muted">Posted on <?= $row['created_at'] ?></small>
+            </div>
+        </div>
+    <?php endwhile; ?>
 </div>
 
-<!-- Footer -->
 <footer class="bg-dark text-white text-center py-3 mt-auto">
     <p>&copy; 2025 IUBQuiz Hub. All rights reserved.</p>
-    <p>Designed and developed by your team.</p>
 </footer>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-

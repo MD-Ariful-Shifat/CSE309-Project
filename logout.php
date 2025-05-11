@@ -54,7 +54,7 @@ include 'connect.php';
 
         <footer class="bg-dark text-white text-center py-3">
             <p>&copy; 2025 IUB Quiz Hub. All rights reserved.</p>
-            <p>Designed and developed by your team.</p>
+            <p>Designed and developed by Md. Ariful Shifat.</p>
         </footer>
     </div>
 
